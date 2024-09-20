@@ -1,4 +1,4 @@
-// src/components/context/AuthContextTypes.ts
+// src/components/types/AuthContextTypes.ts
 
 // Define the user type
 export interface User {

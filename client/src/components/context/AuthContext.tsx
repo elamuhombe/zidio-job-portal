@@ -1,8 +1,9 @@
 // src/context/AuthContext.tsx
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { User, AuthContextType } from "./AuthContextTypes";
+import { User, AuthContextType } from "../types/AuthContextTypes";
 
+// Initialize the context with undefined as the default value
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
