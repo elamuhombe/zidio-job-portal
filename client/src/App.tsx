@@ -1,4 +1,4 @@
-import React from "react";
+
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./components/pages/Login";
 import Register from "./components/pages/Register";
@@ -8,7 +8,7 @@ import JobSeekerDashboard from "./components/dashboard/JobSeekerDashboard";
 import EmployerDashboard from "./components/dashboard/EmployerDashBoard";
 import AuthProvider from "./components/context/AuthContext";
 import PrivateRoute from "./components/routes/PrivateRoutes";
-import HomePage from "./components/pages/HomePage"; // Add your home page component here
+import HomePage from "./components/pages/HomePage"; 
 import "./App.css";
 import "./index.css";
 
@@ -24,11 +24,11 @@ const App = () => {
           <Route path="/jobs/:id" element={<JobDetails />} />
           <Route
             path="/job-seeker/dashboard"
-            element={<PrivateRoute element={<JobSeekerDashboard />} />} // Change to `element`
+            element={<PrivateRoute element={<JobSeekerDashboard />} />} 
           />
           <Route
             path="/employer/dashboard"
-            element={<PrivateRoute element={<EmployerDashboard />} />} // Change to `element`
+            element={<PrivateRoute element={<EmployerDashboard />} />} 
           />
         </Routes>
       </Router>
