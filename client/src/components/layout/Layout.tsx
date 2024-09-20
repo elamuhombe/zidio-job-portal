@@ -1,9 +1,18 @@
-//src/components/layout/Layout.tsx
+// src/components/Layout.tsx
 
-export default function Layout() {
-  return (
-    <div>
-      
-    </div>
-  )
+import React, { ReactNode } from 'react';
+
+interface LayoutProps {
+  children: ReactNode;
 }
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  return (
+    <div className="layout">
+      {children}
+    </div>
+  );
+};
+
+export default Layout;
+
