@@ -1,5 +1,7 @@
 // src/components/pages/HomePage.tsx
 import Layout from "../layout/Layout";
+import FeaturedJobs from "./FeaturedJobs";
+import PopularJobs from "./PopularJobs";
 
 export default function HomePage() {
   return (
@@ -31,6 +33,8 @@ export default function HomePage() {
         </button>
       </div>
     </section>
+    <PopularJobs />
+    <FeaturedJobs />
       </Layout>
       
     </div>
