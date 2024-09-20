@@ -1,16 +1,14 @@
-//src/components/context/AuthContext.tsx
-import React, { createContext, useState, ReactNode } from "react";
-import { User, AuthContextType } from "./AuthContextTypes"; // Import the interfaces
+// src/Context/AuthContext.tsx
 
-// Create the AuthContext
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import { User, AuthContextType } from "./AuthContextTypes";
+
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Define the AuthProvider props
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Change AuthProvider to default export
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
@@ -29,4 +27,13 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 };
 
-export default AuthProvider; // Export as default
+export default AuthProvider;
+
+// Custom hook to use the AuthContext
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};
