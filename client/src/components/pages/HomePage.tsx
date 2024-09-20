@@ -1,5 +1,6 @@
 // src/components/pages/HomePage.tsx
 import Layout from "../layout/Layout";
+import SignUp from "../SignUp";
 import FeaturedJobs from "./FeaturedJobs";
 import PopularJobs from "./PopularJobs";
 
@@ -35,6 +36,7 @@ export default function HomePage() {
     </section>
     <PopularJobs />
     <FeaturedJobs />
+    <SignUp />
       </Layout>
       
     </div>
