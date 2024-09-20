@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import RegisterForm from "./../forms/RegisterForm";
 import Swal from "sweetalert2"; // Import SweetAlert2
+import { Link } from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa";
 
 interface UserData {
   name: string;
@@ -71,6 +73,10 @@ const Register: React.FC = () => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+           {/* Back to Homepage */}
+      <Link to="/" className="text-blue-500 flex items-center mb-4 hover:underline">
+        <FaArrowLeft className="mr-2" /> Back to Homepage
+      </Link>
         <h2 className="text-2xl font-bold mb-6 text-gray-800">Register</h2>
         <RegisterForm
           userData={userData}
