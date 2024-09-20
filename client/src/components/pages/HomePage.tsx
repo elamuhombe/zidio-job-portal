@@ -1,5 +1,5 @@
 
-// src/pages/HomePage.tsx
+// src/components/pages/HomePage.tsx
 export default function HomePage() {
   return (
     <div>
