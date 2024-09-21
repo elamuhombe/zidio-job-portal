@@ -9,7 +9,7 @@ interface IJob extends Document {
   qualifications: string; // Qualifications required
   responsibilities: string; // Job responsibilities
   location: string; // Job location
-  salaryRange: { min: number; max: number }; // Salary range
+  salaryRange?: { min: number; max: number }; // Salary range
   category: ICategory['_id']; // Category reference
   company: string; // Company name
   createdAt: Date; // Creation date
