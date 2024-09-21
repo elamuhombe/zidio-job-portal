@@ -4,8 +4,15 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}", // Adjust based on your file structure
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        inter: ['Inter', 'sans-serif'],
+      },
+      colors: {
+        'jet-black': '#343434',
+      },
+    },
   },
+  variants: {},
   plugins: [],
 };
-
