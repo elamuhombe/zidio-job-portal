@@ -11,7 +11,10 @@ interface Credentials {
 
 const useLogin = () => {
   const { login } = useAuth(); // Now using the custom hook
-  const [credentials, setCredentials] = useState<Credentials>({ email: "", password: "" });
+  const [credentials, setCredentials] = useState<Credentials>({
+    email: "",
+    password: "",
+  });
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -23,28 +26,52 @@ const useLogin = () => {
       setError("Please fill in both fields.");
       return;
     }
-
     try {
-      const response = await axios.post(`${process.env.JOB_PORTAL_API_URL}auth/signIn`, credentials);
-      const { user, token } = response.data;
+      const response = await axios.post(
+        `https://job-board-api-production.up.railway.app/api/v1/auth/signIn`,
+        credentials
+      );
+      const { data } = response;
+      const user = data.data.user; 
+      const {  access_token: token } = data.data.access_token; 
 
+    
+      console.log("response:", response);
+      console.log("response data:", data);
+      console.log("user:", data.data.user);
+
+
+      if (!user) {
+        setError("User data is missing in the response.");
+        return;
+      }
+  
       login(user); // Save user in context
       localStorage.setItem("token", token); // Save token for persistence
-
+  
       // Redirect based on user role
-      switch (user.role) {
-        case "jobseeker":
-          navigate("/jobseeker-dashboard");
-          break;
-        case "employer":
-          navigate("/employer-dashboard");
-          break;
-        default:
-          navigate("/"); // Default route or error page
+      if (user.role) {
+        switch (user.role) {
+          case "job_seeker":
+            navigate("/jobseeker-dashboard");
+            break;
+          case "employer":
+            navigate("/employer-dashboard");
+            break;
+          default:
+            navigate("/");
+        }
+      } else {
+        setError("Role is not defined.");
       }
     } catch (err) {
-      console.error(err);
-      setError("Invalid email or password.");
+      if (axios.isAxiosError(err) && err.response) {
+        console.error("API Error:", err.response.data);
+        setError(err.response.data.message || "An error occurred.");
+      } else {
+        console.error("Unknown Error:", err);
+        setError("Invalid email or password.");
+      }
     }
   };
 
