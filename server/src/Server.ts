@@ -1,12 +1,17 @@
 //src/Server.ts
 import express from 'express';
 import dotenv from 'dotenv';
+import { swaggerDocs, swaggerUi } from './config/Swagger'; 
 
-dotenv.config(); // Load environment variables from .env file
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 7100; // Use the PORT variable from .env, or default to 5000
+const PORT = process.env.PORT || 7100;
 
+// Set up Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+// Sample route
 app.get('/', (req, res) => {
   res.send('Welcome to Zidio back-end!');
 });
