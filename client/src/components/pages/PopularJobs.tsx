@@ -1,5 +1,3 @@
-//src/components/pages/PopularJobs.tsx
-
 import { Link } from "react-router-dom";
 import {
   FaLaptopCode,
@@ -8,7 +6,11 @@ import {
   FaMobileAlt,
 } from "react-icons/fa";
 
-const PopularJobs = () => {
+interface PopularJobsProps {
+  location: string;
+}
+
+const PopularJobs = ({ location }: PopularJobsProps) => {
   const jobCategories = [
     {
       title: "Front-End Developer",
@@ -41,11 +43,16 @@ const PopularJobs = () => {
     // Add more categories as needed
   ];
 
+  // Filter jobs based on the location prop
+  const filteredJobs = jobCategories.filter((job) =>
+    location ? job.location.toLowerCase().includes(location.toLowerCase()) : true
+  );
+
   return (
     <section className="mb-8 px-4 md:px-8 lg:px-16">
       <h2 className="text-2xl font-semibold mb-4 text-center">Popular Jobs</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
-        {jobCategories.map((job, index) => (
+        {filteredJobs.map((job, index) => (
           <div
             key={index}
             className="border p-4 rounded-lg shadow-lg flex items-start space-x-4 bg-white"
