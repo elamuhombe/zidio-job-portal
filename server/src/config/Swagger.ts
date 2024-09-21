@@ -1,4 +1,4 @@
-// src/config/swagger.ts
+// src/config/Swagger.ts
 
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
