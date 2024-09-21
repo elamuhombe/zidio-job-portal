@@ -3,8 +3,11 @@
 import { Link } from "react-router-dom";
 import { FaChartLine, FaReact, FaCloud, FaServer } from "react-icons/fa";
 
-const FeaturedJobs = () => {
-  const featuredJobs = [
+interface FeaturedJobsProps {
+  location: string;
+}
+const FeaturedJobs = ({ location }: FeaturedJobsProps) =>  {
+  const jobCategories = [
     {
       title: "Data Scientist",
       company: "Company B",
@@ -35,12 +38,16 @@ const FeaturedJobs = () => {
     },
     // Add more featured jobs as needed
   ];
+  // Filter jobs based on the location prop
+  const filteredJobs = jobCategories.filter((job) =>
+    location ? job.location.toLowerCase().includes(location.toLowerCase()) : true
+  );
 
   return (
     <section className="mb-8 px-4 md:px-8 lg:px-16">
       <h2 className="text-2xl font-semibold mb-4 text-center">Featured Jobs</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
-        {featuredJobs.map((job, index) => (
+        {filteredJobs.map((job, index) => (
           <div
             key={index}
             className="border p-4 rounded-lg shadow-lg flex items-start space-x-4 bg-white"
