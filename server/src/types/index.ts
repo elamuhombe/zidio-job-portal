@@ -11,6 +11,22 @@ export interface IUser {
   role: "jobSeeker" | "employer" | "admin";
   profile?: IProfile;
 }
+// Export the IUserLogin
+export interface IUserLogin {
+  email: string;
+  password: string;
+}
+
+// Export UserRole type based on IUser
+export type UserRole = IUser["role"];
+
+//Export the IUserSignup
+export interface IUserSignUp {
+  username: string;
+  email: string;
+  password: string;
+  role: UserRole;
+}
 // Export the Job interface
 export interface IJob {
   title: string;
