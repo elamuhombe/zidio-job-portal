@@ -1,6 +1,5 @@
-//src/models/User.ts
-import mongoose, { Schema, Document } from "mongoose";
-import { IUser } from "../types";
+import mongoose, { Schema } from "mongoose";
+import { IUser, UserRole } from "../types";
 
 const UserSchema: Schema<IUser> = new Schema({
   username: { type: String, required: true },
@@ -8,11 +7,11 @@ const UserSchema: Schema<IUser> = new Schema({
   password: { type: String, required: true },
   role: {
     type: String,
-    enum: ["jobSeeker", "employer", "admin"],
+    enum: Object.values(UserRole), // Use UserRole enum values
     required: true,
   },
   profile: { type: Schema.Types.ObjectId, ref: "Profile" },
-});
+}, { timestamps: true }); // Add timestamps for createdAt and updatedAt
 
 const User = mongoose.model<IUser>("User", UserSchema);
 export { IUser, User };
