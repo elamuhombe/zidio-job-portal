@@ -1,33 +1,48 @@
-//src/types/index.ts
+import mongoose, { Types } from "mongoose";
 
-import mongoose from "mongoose";
+// Define UserRole enum
+export enum UserRole {
+  JOB_SEEKER = "job_seeker",    
+  EMPLOYER = "employer",
+  USER = "user",
+  ADMIN = "admin"
+}
 
-//Export User interface
-export interface IUser {
-  _id: mongoose.Types.ObjectId; // Explicitly declare _id field
+// Base interface for common fields
+export interface Base {
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date;
+}
+
+// Export User interface
+export interface IUser extends Base {
+  _id: Types.ObjectId;
   username: string;
   email: string;
   password: string;
-  role: "jobSeeker" | "employer" | "admin";
-  profile?: IProfile;
+  role: UserRole;
+  profile?: Types.ObjectId; // Use Types.ObjectId for referencing profile
+  applied_jobs?: Types.ObjectId[]; // Optional
+  posted_jobs?: Types.ObjectId[]; // Optional
+  notifications?: Types.ObjectId[]; // Optional
 }
-// Export the IUserLogin
+
+// Export the IUserLogin interface
 export interface IUserLogin {
   email: string;
   password: string;
 }
 
-// Export UserRole type based on IUser
-export type UserRole = IUser["role"];
-
-//Export the IUserSignup
+// Export the IUserSignUp interface
 export interface IUserSignUp {
   username: string;
   email: string;
   password: string;
-  role: UserRole;
+  role: UserRole; // Use the enum here
 }
-// Export the Job interface
+
+// Export Job interface
 export interface IJob {
   title: string;
   description: string;
@@ -40,6 +55,7 @@ export interface IJob {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
 // Export Profile interface
 export interface IProfile {
   user: IUser["_id"];
@@ -54,14 +70,15 @@ export interface IProfile {
   };
 }
 
-//Export Category interface
+// Export Category interface
 export interface ICategory {
-  _id: mongoose.Types.ObjectId;
+  _id: Types.ObjectId;
   name: string;
   image: string;
 }
-// Export JWTPayLoad interface
+
+// Export JwtPayload interface
 export interface JwtPayload {
   user_id: string;
-  role?: UserRole;
+  role?: UserRole; // Use the enum here
 }
