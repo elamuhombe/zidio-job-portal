@@ -60,3 +60,8 @@ export interface ICategory {
   name: string;
   image: string;
 }
+// Export JWTPayLoad interface
+export interface JwtPayload {
+  user_id: string;
+  role?: UserRole;
+}
