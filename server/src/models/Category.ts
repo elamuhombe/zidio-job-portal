@@ -1,10 +1,8 @@
 //src/models/Category.ts
 import mongoose, { Schema, Document } from 'mongoose';
+import { ICategory } from '../types';
 
-interface ICategory extends Document {
-  name: string; // Category name
-  image: string; // URL or path to the category image
-}
+
 
 // Mongoose schema definition
 const CategorySchema: Schema<ICategory> = new Schema({
