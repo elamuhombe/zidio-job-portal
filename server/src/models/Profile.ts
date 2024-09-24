@@ -14,6 +14,8 @@ import { IProfile } from "../types";
       name: { type: String },
       description: { type: String },
     },
+    profile_resume: { type: String},
+    user_id: { type: Schema.Types.ObjectId, ref: "User", unique: true , required: true },
   });
   
   const Profile = mongoose.model<IProfile>('Profile', ProfileSchema);
