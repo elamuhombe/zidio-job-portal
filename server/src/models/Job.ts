@@ -17,6 +17,7 @@ const JobSchema: Schema<IJob> = new Schema(
     },
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true }, // Reference to Category
     company: { type: String, required: true },
+    employer_id: { type: Schema.Types.ObjectId, ref: "User", required: true }
   },
   {
     timestamps: true, // Automatically manage createdAt and updatedAt fields

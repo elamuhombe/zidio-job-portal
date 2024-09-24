@@ -1,12 +1,6 @@
 import mongoose, { Types } from "mongoose";
+import { UserRole } from "./types";
 
-// Define UserRole enum
-export enum UserRole {
-  JOB_SEEKER = "job_seeker",    
-  EMPLOYER = "employer",
-  USER = "user",
-  ADMIN = "admin"
-}
 
 // Base interface for common fields
 export interface Base {
@@ -34,13 +28,6 @@ export interface IUserLogin {
   password: string;
 }
 
-// Export the IUserSignUp interface
-export interface IUserSignUp {
-  username: string;
-  email: string;
-  password: string;
-  role: UserRole; // Use the enum here
-}
 
 // Export Job interface
 export interface IJob {
@@ -51,9 +38,36 @@ export interface IJob {
   location: string;
   salaryRange?: { min: number; max: number };
   category: ICategory["_id"];
+  employer_id: Types.ObjectId;
+  applications: Types.ObjectId[];
   company: string;
   createdAt?: Date;
   updatedAt?: Date;
+}
+
+//Export Job Status
+export enum JobStatus {
+  OPEN = "open",
+  CLOSED = "closed",
+}
+//Export JobApplication status
+export enum JobApplicationStatus {
+  APPLIED = "applied",
+  REVIEWED = "reviewed",
+  INTERVIEW = "interview",
+  HIRED = "hired",
+  REJECTED = "rejected",
+}
+
+//Export JobApplication interface
+export interface IJobApplication extends Document {
+  job_id: Types.ObjectId;
+  job_seeker_id: Types.ObjectId;
+  status:JobApplicationStatus;
+  cover_letter: string;
+  resume: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // Export Profile interface
@@ -68,6 +82,8 @@ export interface IProfile {
     name: string;
     description: string;
   };
+  profile_resume?: string;
+  user_id: Types.ObjectId;
 }
 
 // Export Category interface
@@ -82,3 +98,8 @@ export interface JwtPayload {
   user_id: string;
   role?: UserRole; // Use the enum here
 }
+export {
+  // Base interface for common fields
+  UserRole
+};
+

@@ -1,32 +1,24 @@
 //src/models/JobApplication.ts
-import { Schema, model, Document, Types } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
+import { IJobApplication, JobApplicationStatus } from '../types';
 
-interface IJobApplication extends Document {
-  job_id: Types.ObjectId;
-  job_seeker_id: Types.ObjectId;
-  status: 'applied' | 'in_review' | 'interview_scheduled' | 'rejected' | 'hired';
-  cover_letter: string;
-  resume: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-const jobApplicationSchema = new Schema<IJobApplication>(
-  {
-    job_id: { type: Schema.Types.ObjectId, ref: 'Job', required: true },
-    job_seeker_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    status: {
-      type: String,
-      enum: ['applied', 'in_review', 'interview_scheduled', 'rejected', 'hired'],
-      default: 'applied',
-      required: true
-    },
-    cover_letter: { type: String, required: true },
-    resume: { type: String, required: true }
+// Mongoose schema definition
+const jobApplicationSchema: Schema<IJobApplication> = new Schema({
+  job_id: { type: Schema.Types.ObjectId, ref: 'Job', required: true },
+  job_seeker_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  status: {
+    type: String,
+    enum: Object.values(JobApplicationStatus), // Use the enum values from JobApplicationStatus
+    default: JobApplicationStatus.APPLIED, // Use the enum value for default
+    required: true,
   },
-  { timestamps: true } // Adds createdAt and updatedAt
-);
+  cover_letter: { type: String, required: true },
+  resume: { type: String, required: true },
 
-const JobApplication = model<IJobApplication>('JobApplication', jobApplicationSchema);
+}, { timestamps: true });
 
-export default JobApplication;
+// Mongoose model
+const JobApplication = mongoose.model<IJobApplication>('JobApplication', jobApplicationSchema);
+
+// Exporting the types and models
+export { IJobApplication, JobApplication };
