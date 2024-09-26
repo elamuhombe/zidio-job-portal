@@ -72,40 +72,51 @@ export class AuthService {
         access_token: string;
     }> {
         const { email, password } = payload;
-
+    
         try {
+            // Attempt to find the user by email
             const user = await User.findOne({ email });
-
+    
+            // Check if user exists
             if (!user) {
                 throw new HttpError(401, "Invalid credentials");
             }
-
+    
+            // Verify the provided password against the stored password
             const isPasswordValid = await comparePassword(password, user.password);
-
+    
+            // If the password is invalid, throw an error
             if (!isPasswordValid) {
                 throw new HttpError(401, "Invalid credentials");
             }
-
+    
+            // Generate JWT token
             const access_token = jwt.sign(
                 { user_id: user._id },
                 config.TOKEN_SECRET,
                 { expiresIn: config.TOKEN_EXPIRY }
             );
-
+    
+            // Prepare the user response
             const userResponse = sendLoginResponse(user);
-
+    
+            // Return the successful sign-in response
             return {
                 user: userResponse,
                 access_token,
                 message: "Login successful",
             };
         } catch (error: unknown) {
+            // Handle known HttpError types
             if (error instanceof HttpError) {
                 throw error;
-            } else if (error instanceof Error) {
+            } 
+            // Handle other types of errors
+            else if (error instanceof Error) {
                 throw new HttpError(500, error.message);
             }
+            // Catch-all for any other unknown errors
             throw new HttpError(500, "An unknown error occurred");
         }
     }
-}
+}    
