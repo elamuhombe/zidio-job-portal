@@ -4,8 +4,8 @@ import jwt from "jsonwebtoken";
 import config from "../config";
 import { User } from "./../models/User";
 import log from "../utils/logger";
-import { ServerError } from "./Error";
 import { JwtPayload, UserRole } from "../types";
+import {ServerError} from "./Error";
 
 export const authMiddleware = async (
   req: Request & { user?: { user_id: string; role: UserRole; email: string; username: string } },

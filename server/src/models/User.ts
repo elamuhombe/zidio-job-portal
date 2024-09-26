@@ -1,7 +1,8 @@
+//src/models/User.ts
 import mongoose, { Schema, Document } from 'mongoose';
 import { IUser, UserRole } from '../types';
 
-const UserSchema: Schema<IUser> = new Schema({
+const UserSchema: Schema<IUser & Document> = new Schema({
   username: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },

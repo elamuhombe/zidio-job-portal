@@ -5,6 +5,10 @@ import mongoose from 'mongoose';
 import { swaggerDocs, swaggerUi } from './config/Swagger'; 
 import { errorHandler, routeNotFound } from './middleware/Error';
 import { authRoute } from './routes/AuthRoute';
+import jobRoute from './routes/JobRoute';
+import { insertSeedData } from './SeedData';
+import { userRoute } from './routes/userRoute';
+import jobApplicationRoute from './routes/JobApplicationRoute';
 
 dotenv.config();
 
@@ -34,6 +38,9 @@ const connectToMongoDB = async () => {
   try {
     await mongoose.connect(mongoURI!);
     console.log('MongoDB connected successfully');
+
+    // Insert seed data after the connection is established
+    await insertSeedData(); // Call the function to insert seed data
   } catch (error) {
     console.error('MongoDB connection error:', error);
     process.exit(1); // Exit the process if the connection fails
@@ -54,6 +61,10 @@ app.get("/api/v1", (req,res) => {
 });
 
 app.use("/api/v1", authRoute);
+app.use("/api/v1", userRoute);
+app.use("/api/v1", jobRoute)
+app.use("/api/v1", jobApplicationRoute)
+
 
 app.use(errorHandler);
 app.use(routeNotFound);
