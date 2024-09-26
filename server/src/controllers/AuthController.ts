@@ -1,13 +1,17 @@
 //src/controllers/AuthController.ts
 import { Request, Response, NextFunction } from "express";
-import  { AuthService}  from "../services/AuthService";
+import { AuthService } from "../services/AuthService";
 import { sendJsonResponse } from "../utils/send-response";
+import { signUpSchema, signInSchema } from "../validators/AuthValidator"; // Import validation schemas
 
-const AuthServices: any = new AuthService();
+const authService = new AuthService();
 
 const signUp = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { user, access_token, message } = await AuthServices.signUp(req.body);
+    // Validate the signup request body
+    const validatedData = signUpSchema.parse(req.body);
+    
+    const { user, access_token, message } = await authService.signUp(validatedData);
     sendJsonResponse(res, 201, message, { user, access_token });
   } catch (error) {
     next(error);
@@ -16,8 +20,11 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
 
 const signIn = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { user, access_token, message } = await AuthServices.signIn(req.body);
-    sendJsonResponse(res, 201, message, { user, access_token });
+    // Validate the signin request body
+    const validatedData = signInSchema.parse(req.body);
+
+    const { user, access_token, message } = await authService.signIn(validatedData);
+    sendJsonResponse(res, 200, message, { user, access_token }); // Changed status code to 200 for successful login
   } catch (error) {
     next(error);
   }
