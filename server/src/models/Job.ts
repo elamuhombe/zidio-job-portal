@@ -1,6 +1,5 @@
 //src/models/Job.ts
 import mongoose, { Schema, Document } from "mongoose";
-import { ICategory } from "./Category"; // Importing the ICategory interface
 import { IJob } from "../types";
 
 // Mongoose schema definition
