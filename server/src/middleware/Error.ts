@@ -20,13 +20,22 @@ export class BadRequest extends HttpError {
     }
 }
 
-// Other error classes like ResourceNotFound, Unauthorized, etc.
 // Error class for resource not found (HTTP 404)
 export class ResourceNotFound extends HttpError {
   constructor(message: string) {
       super(404, message); // Call base class with status code 404
   }
 }
+// Error class for Servor error
+export class ServerError extends Error {
+    constructor(public message: string, public statusCode: number = 500) {
+      super(message);
+      this.name = 'ServerError';
+    }
+  }
+  
+  export default ServerError;
+  
 
 // Error class for unauthorized access (HTTP 401)
 export class Unauthorized extends HttpError {
