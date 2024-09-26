@@ -1,4 +1,4 @@
-import mongoose, { Types } from "mongoose";
+import { Document, Types } from "mongoose";
 import { UserRole } from "./types";
 
 
@@ -16,11 +16,27 @@ export interface IUser extends Base {
   email: string;
   password: string;
   role: UserRole;
-  profile?: Types.ObjectId; // Use Types.ObjectId for referencing profile
+  profile?: Types.ObjectId | null; // Use Types.ObjectId for referencing profile
   applied_jobs?: Types.ObjectId[]; // Optional
   posted_jobs?: Types.ObjectId[]; // Optional
   notifications?: Types.ObjectId[]; // Optional
 }
+export interface IRequestUser {
+  user_id: string; // Add the expected properties
+  role: UserRole;
+  email: string;
+  username: string;
+  _id: Types.ObjectId;
+
+
+}
+
+
+export interface CustomRequest extends Request {
+  user?: IRequestUser; // Use the new interface here
+}
+
+
 
 // Export the IUserLogin interface
 export interface IUserLogin {
@@ -30,14 +46,14 @@ export interface IUserLogin {
 
 
 // Export Job interface
-export interface IJob {
+export interface IJob extends Document {
   title: string;
   description: string;
-  qualifications: string[];
-  responsibilities: string[];
+  qualifications?: string[];
+  responsibilities?: string[];
   location: string;
   salaryRange?: { min: number; max: number };
-  category: ICategory["_id"];
+  category: Types.ObjectId; 
   employer_id: Types.ObjectId;
   applications: Types.ObjectId[];
   company: string;
@@ -57,10 +73,12 @@ export enum JobApplicationStatus {
   INTERVIEW = "interview",
   HIRED = "hired",
   REJECTED = "rejected",
+  NOT_SUBMITTED = "not submitted"
 }
 
 //Export JobApplication interface
 export interface IJobApplication extends Document {
+  _id: Types.ObjectId; 
   job_id: Types.ObjectId;
   job_seeker_id: Types.ObjectId;
   status:JobApplicationStatus;

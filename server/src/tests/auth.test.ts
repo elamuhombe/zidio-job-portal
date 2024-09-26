@@ -1,5 +1,5 @@
 //src/tests/auth.test.ts
-import { AuthService } from './../services/AuthService'; // Adjust the import as necessary
+import { AuthService } from './../services/AuthService'; 
 import { User } from '../models/User';
 import { comparePassword, hashPassword } from '../utils';
 import { Conflict, HttpError } from '../middleware/Error';
