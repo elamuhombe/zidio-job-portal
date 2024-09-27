@@ -43,15 +43,33 @@ class JobApplicationService {
     return savedApplication; // Ensure this is returned
   }
 
-  async getApplicationsByJobId(
-    jobId: Types.ObjectId
-  ): Promise<IJobApplication[]> {
-    console.log(`Fetching applications for job ID: ${jobId}`);
-    return await JobApplication.find({ job_id: jobId })
-      .populate("job_seeker_id")
-      .exec();
+
+  // Method to get applications by Job ID
+async getApplicationsByJobId(jobId: string): Promise<IJobApplication[]> {
+  console.log("Fetching applications for job ID:", jobId);
+  
+  // Validate the job ID format and convert it to ObjectId
+  let objectId: Types.ObjectId;
+  try {
+    objectId = new Types.ObjectId(jobId);
+  } catch (error) {
+    console.error("Invalid job ID format:", jobId);
+    throw new Error("Invalid job ID format. Please provide a valid 24-character hex string.");
   }
 
+  // Fetch applications associated with the job ID
+  const applications = await JobApplication.find({ job_id: objectId });
+
+  if (!applications || applications.length === 0) {
+    console.warn("No applications found for job ID:", jobId);
+    return []; // Return an empty array if no applications are found
+  }
+
+  console.log("Applications found:", applications);
+  return applications;
+}
+
+  
   // Method to update the status of an application
   async updateApplicationStatus(
     applicationId: string,
