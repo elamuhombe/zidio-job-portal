@@ -15,7 +15,7 @@ const JobSchemaZod = z.object({
   // Update category to validate as a string that represents an ObjectId
   category: z.string().refine((val) => {
     return /^[0-9a-fA-F]{24}$/.test(val); // Regex for ObjectId format
-  }, { message: "Invalid category ID" }),
+  }),
   company: z.string().min(1, "Company name is required"),
 });
 
