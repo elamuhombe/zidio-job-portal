@@ -22,6 +22,17 @@ const JobApplicationSchemaZod = z.object({
     .string()
     .regex(/\.(pdf|docx)$/i, { message: 'Resume must be a PDF or DOCX file' }),
 });
+// Zod schema for updating job application status
+const UpdateApplicationStatusSchemaZod = z.object({
+  params: z.object({
+    applicationId: z
+      .string()
+      .regex(/^[a-f\d]{24}$/i, { message: 'Invalid Application ID format' }), // Validate as ObjectId
+  }),
+  body: z.object({
+    status: z.enum(jobApplicationStatusValues, { message: 'Invalid status value' }), // Validate status update
+  }),
+});
 
 // Export the validation schema
-export { JobApplicationSchemaZod };
+export { JobApplicationSchemaZod, UpdateApplicationStatusSchemaZod };
