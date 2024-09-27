@@ -13,7 +13,7 @@ const JobApplicationSchemaZod = z.object({
   job_seeker_id: z
     .string()
     .regex(/^[a-f\d]{24}$/i, { message: 'Invalid Job Seeker ID format' }),
-  status: z.enum(jobApplicationStatusValues), // Now it should work
+  status: z.enum(jobApplicationStatusValues), 
   cover_letter: z
     .string()
     .min(100, { message: 'Cover letter must be at least 100 characters long' })
