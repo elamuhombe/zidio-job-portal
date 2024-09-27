@@ -1,105 +1,155 @@
-//src/controllers/JobApplicationController.ts
+// src/controllers/JobApplicationController.ts
+import { Request, Response, NextFunction } from "express";
+import { JobApplicationService } from "../services/JobApplicationService";
+import { sendJsonResponse } from "../utils/send-response";
+import { JobApplicationSchemaZod, UpdateApplicationStatusSchemaZod } from "../validators/JobApplicationValidator"; // Import validation schemas
+import { Types } from "mongoose";
+import { ResourceNotFound, Conflict } from "../middleware/Error"; // Import new Conflict error
+import { ZodError } from "zod";
+import { JobApplicationStatus } from "../types";
 
-import { Request, Response } from 'express';
-import { JobApplicationService } from '../services/JobApplicationService';
-import { JobApplicationSchemaZod } from '../validators/JobApplicationValidator';
-import { handleError } from '../services/ErrorHandler';
-import { Types } from 'mongoose';
+// Create an instance of the JobApplicationService
+const jobApplicationService = new JobApplicationService();
 
-export class JobApplicationController {
-    private jobApplicationService: JobApplicationService;
+// Controller method to apply for a job
+const applyForJob = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Validate the create job application request body
+    const validatedData = JobApplicationSchemaZod.parse(req.body);
 
-    constructor() {
-        this.jobApplicationService = new JobApplicationService();
+    // Convert job_id and job_seeker_id to ObjectId and prepare the application data
+    const applicationData = {
+      ...validatedData,
+      job_id: new Types.ObjectId(validatedData.job_id), // Convert to ObjectId
+      job_seeker_id: new Types.ObjectId(validatedData.job_seeker_id), // Convert to ObjectId
+      status: validatedData.status as JobApplicationStatus, // Cast to JobApplicationStatus
+      cover_letter: validatedData.cover_letter,
+      resume: validatedData.resume,
+    };
+
+    // Call the job application service to create the application
+    const savedApplication = await jobApplicationService.applyForJob(applicationData);
+
+    // Send a successful response
+    sendJsonResponse(res, 201, "Application submitted successfully", { application: savedApplication });
+  } catch (error) {
+    // Handle Zod validation errors
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        success: false,
+        status: 400,
+        message: 'Validation error',
+        errors: error.errors, // Include Zod validation errors
+      });
     }
 
-    // Apply for a job
-    public async applyForJob(req: Request, res: Response) {
-        const { job_id, job_seeker_id, cover_letter, resume, useExistingResume } = req.body;
-
-        // Validate input data
-        const validation = JobApplicationSchemaZod.safeParse({
-            job_id,
-            job_seeker_id,
-            cover_letter,
-            resume
-        });
-
-        if (!validation.success) {
-            return res.status(400).json({ errors: validation.error.errors });
-        }
-
-        
-            
-            try {
-                const filePath = resume?.path || null;
-            const filename = resume?.filename || null;
-            
-                const result = await this.jobApplicationService.applyForJob({
-                    job_id,
-                    job_seeker_id,
-                    cover_letter,
-                    resume: { path: filePath, filename: filename }, // Pass the resume as an object
-                    useExistingResume
-                });
-            } catch (error) {
-                console.error("Error applying for job:", error);
-                // Handle error appropriately (e.g., show a notification to the user)
-            }
-        }   
-    
-
-    // Get all job applications for a user
-    public async getAllJobApplications(req: Request, res: Response) {
-        const userId = req.params.userId; // Ensure this is extracted from the route parameters
-
-        try {
-            const applications = await this.jobApplicationService.getAllJobsAndApplications(new Types.ObjectId(userId));
-            return res.status(200).json(applications);
-        } catch (error) {
-            handleError(error);
-            return res.status(500).json({ message: "An error occurred while fetching job applications." });
-        }
+    // Handle conflict error
+    if (error instanceof Conflict) {
+      return sendJsonResponse(res, 409, error.message);
     }
 
-    // Get job applications by job ID
-    public async getJobApplicationsByJobId(req: Request, res: Response) {
-        const userId = req.params.userId; // Ensure this is extracted from the route parameters
-        const jobId = req.params.jobId; // Ensure this is extracted from the route parameters
+    // Log unexpected errors for debugging
+    console.error("Error creating job application:", error);
 
-        try {
-            const applications = await this.jobApplicationService.getJobApplicationsByJobId(new Types.ObjectId(userId), new Types.ObjectId(jobId));
-            return res.status(200).json(applications);
-        } catch (error) {
-            handleError(error);
-            return res.status(500).json({ message: "An error occurred while fetching job applications for the job." });
-        }
+    // Forward the error to the error handling middleware
+    next(error);
+  }
+};
+
+// Controller method to get applications by job ID
+const getApplicationsByJobId = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { jobId } = req.params;
+
+    // Validate that jobId is provided and is a valid ObjectId
+    if (!jobId || !Types.ObjectId.isValid(jobId)) {
+      return sendJsonResponse(res, 400, "Invalid job ID");
     }
 
-    // Update job application status
-    public async updateJobApplicationStatus(req: Request, res: Response) {
-        const { application_id, status } = req.body;
-        const userId = req.params.userId; // Ensure this is extracted from the route parameters
+    const validatedJobId = new Types.ObjectId(jobId);
 
-        try {
-            const result = await this.jobApplicationService.updateJobApplicationStatus(new Types.ObjectId(userId), new Types.ObjectId(application_id), status);
-            return res.status(200).json(result);
-        } catch (error) {
-            handleError(error);
-            return res.status(500).json({ message: "An error occurred while updating the job application status." });
-        }
+    // Await the result of the getApplicationsByJobId method
+    const result = await jobApplicationService.getApplicationsByJobId(validatedJobId);
+
+    // Check if result is valid
+    if (!result || result.length === 0) {
+      return sendJsonResponse(res, 404, "No applications found for the specified job ID.");
     }
 
-    // Get applied jobs
-    public async getAppliedJobs(req: Request, res: Response) {
-        const userId = req.params.userId; // Ensure this is extracted from the route parameters
-
-        try {
-            const applications = await this.jobApplicationService.getAppliedJobs(new Types.ObjectId(userId));
-            return res.status(200).json(applications);
-        } catch (error) {
-            handleError(error);
-            return res.status(500).json({ message: "An error occurred while fetching applied jobs." });
-        }
+    return sendJsonResponse(res, 200, "Applications fetched successfully", { applications: result });
+  } catch (error) {
+    if (error instanceof ResourceNotFound) {
+      return sendJsonResponse(res, 404, error.message);
     }
-}
+    next(error);
+  }
+};
+
+// Controller method to update application status
+const updateApplicationStatus = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Validate the request parameters and body
+    const validatedParams = UpdateApplicationStatusSchemaZod.parse({
+      params: req.params,
+      body: req.body,
+    });
+
+    // Extract application ID and new status from the validated data
+    const { applicationId } = validatedParams.params;
+    const { status } = validatedParams.body;
+
+    // Validate that applicationId is a valid ObjectId
+    if (!Types.ObjectId.isValid(applicationId)) {
+      return sendJsonResponse(res, 400, "Invalid application ID");
+    }
+
+    // Call the service to update the application status
+    const updatedApplication = await jobApplicationService.updateApplicationStatus(applicationId, JobApplicationStatus.APPLIED);
+
+    // Check if the application was found and updated
+    if (!updatedApplication) {
+      return sendJsonResponse(res, 404, "Application not found.");
+    }
+
+    // Send a successful response
+    return sendJsonResponse(res, 200, "Application status updated successfully", { updatedApplication });
+  } catch (error) {
+    // Handle Zod validation errors
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        success: false,
+        status: 400,
+        message: 'Validation error',
+        errors: error.errors, // Include Zod validation errors
+      });
+    }
+
+    next(error);
+  }
+};
+
+// Controller method to delete an application
+const deleteApplication = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { applicationId } = req.params;
+
+    // Validate that applicationId is provided and is a valid ObjectId
+    if (!applicationId || !Types.ObjectId.isValid(applicationId)) {
+      return sendJsonResponse(res, 400, "Invalid application ID");
+    }
+
+    // Call the job application service to delete the application
+    const deletedApplication = await jobApplicationService.deleteApplication(applicationId);
+
+    if (!deletedApplication) {
+      return sendJsonResponse(res, 404, "Application not found or already deleted.");
+    }
+
+    // Send a successful response
+    return sendJsonResponse(res, 200, "Application deleted successfully", { deletedApplication });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { applyForJob, getApplicationsByJobId, updateApplicationStatus, deleteApplication };
