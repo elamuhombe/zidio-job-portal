@@ -1,15 +1,11 @@
-import { Document, Types } from "mongoose";
+import { Document, ObjectId, Types } from "mongoose";
 import { UserRole } from "./types";
 
 // Base interface for common fields
-export interface Base {
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date;
-}
+
 
 // Export User interface
-export interface IUser extends Base {
+export interface IUser  {
   _id: Types.ObjectId;
   username: string;
   email: string;
@@ -19,6 +15,10 @@ export interface IUser extends Base {
   applied_jobs?: Types.ObjectId[];
   posted_jobs?: Types.ObjectId[];
   notifications?: Types.ObjectId[];
+  __v?: number; // Optional version key for Mongoose
+  createdAt?: Date; // Include createdAt
+  updatedAt?: Date; // Include updatedAt
+  deletedAt?: Date; // Include deletedAt for soft delete
 }
 
 // Export the IUserLogin interface
@@ -72,15 +72,12 @@ export interface IJobApplication extends Document {
 
 // Export Profile interface
 export interface IProfile {
+  _id?: Types.ObjectId;
   user: IUser["_id"];
-  resume: string;
   contactDetails: {
     phone: string;
-    address: string;
-  };
-  companyInfo?: {
-    name: string;
-    description: string;
+    email: string;
+    address?: String;
   };
   profile_resume?: string;
   user_id: Types.ObjectId;
@@ -98,7 +95,30 @@ export interface JwtPayload {
   user_id: string;
   role?: UserRole; // Use the enum here
 }
+// Employer Profile interface
+export interface IEmployerProfile {
+  _id?: Types.ObjectId;
+  user: IUser["_id"];
+  companyInfo: {
+    name: string;
+    description: string;
+  };
+  contactDetails: {
+    phone: string;
+    address: string;
+    email: string;
+  };
+  user_id: Types.ObjectId;
+}
+
+// Extend IProfile for Job Seekers
+export interface IJobSeekerProfile extends IProfile {
+  resume: string; // Now required for job seekers
+}
+// Mongoose Document Type
+export type JobSeekerProfileDocument = IJobSeekerProfile & Document;
 export {
   // Base interface for common fields
   UserRole,
 };
+
