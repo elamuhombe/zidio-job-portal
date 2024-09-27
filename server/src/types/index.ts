@@ -1,7 +1,6 @@
 import { Document, Types } from "mongoose";
 import { UserRole } from "./types";
 
-
 // Base interface for common fields
 export interface Base {
   createdAt: Date;
@@ -16,34 +15,17 @@ export interface IUser extends Base {
   email: string;
   password: string;
   role: UserRole;
-  profile?: Types.ObjectId | null; // Use Types.ObjectId for referencing profile
-  applied_jobs?: Types.ObjectId[]; // Optional
-  posted_jobs?: Types.ObjectId[]; // Optional
-  notifications?: Types.ObjectId[]; // Optional
+  profile?: Types.ObjectId | null;
+  applied_jobs?: Types.ObjectId[];
+  posted_jobs?: Types.ObjectId[];
+  notifications?: Types.ObjectId[];
 }
-export interface IRequestUser {
-  user_id: string; // Add the expected properties
-  role: UserRole;
-  email: string;
-  username: string;
-  _id: Types.ObjectId;
-
-
-}
-
-
-export interface CustomRequest extends Request {
-  user?: IRequestUser; // Use the new interface here
-}
-
-
 
 // Export the IUserLogin interface
 export interface IUserLogin {
   email: string;
   password: string;
 }
-
 
 // Export Job interface
 export interface IJob extends Document {
@@ -53,7 +35,7 @@ export interface IJob extends Document {
   responsibilities?: string[];
   location: string;
   salaryRange?: { min: number; max: number };
-  category: Types.ObjectId; 
+  category: Types.ObjectId;
   employer_id: Types.ObjectId;
   applications: Types.ObjectId[];
   company: string;
@@ -73,15 +55,15 @@ export enum JobApplicationStatus {
   INTERVIEW = "interview",
   HIRED = "hired",
   REJECTED = "rejected",
-  NOT_SUBMITTED = "not submitted"
+  NOT_SUBMITTED = "not submitted",
 }
 
 //Export JobApplication interface
 export interface IJobApplication extends Document {
-  _id: Types.ObjectId; 
+  _id: Types.ObjectId;
   job_id: Types.ObjectId;
   job_seeker_id: Types.ObjectId;
-  status:JobApplicationStatus;
+  status: JobApplicationStatus;
   cover_letter: string;
   resume: string;
   createdAt: Date;
@@ -118,6 +100,5 @@ export interface JwtPayload {
 }
 export {
   // Base interface for common fields
-  UserRole
+  UserRole,
 };
-
